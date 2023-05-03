@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interview Support System</title>
+  </head>
+  <body>
+    <h1>Interview Support System</h1>
+    <div id="transcription"></div>
+    
+    <script>
+  
+  navigator.mediaDevices.getUserMedia({ audio: true })
+  .then(stream => {
+    // Access to microphone is granted, your code logic goes here
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.interimResults = true; // enable intermediate results
+
+    let script = ""
+
+    recognition.addEventListener('result', event => {
+      const interimTranscription = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('');
+
+      // update the transcription display with the latest text
+
+      const transcriptionElement = document.getElementById('transcription');
+      script = interimTranscription
+      transcriptionElement.innerHTML =  interimTranscription ;
+    });
+
+    // create an event listener for the "end" event from the speech recognizer
+    recognition.addEventListener('end', () => {
+      // once the speech recognizer has stopped, restart it to continue listening
+      recognition.start();
+      const divElement = document.getElementById('transcription');
+      divElement.id = 'past';
+
+      const newDiv = document.createElement('div');
+
+      newDiv.setAttribute('id', 'transcription');
+      // Add content to the div element
+      newDiv.innerHTML = '';
+
+      // Append the new div element to the HTML document
+      document.body.appendChild(newDiv); 
+      console.log(script)
+    });
+
+    // start the speech recognizer
+    recognition.start();
+  })
+  .catch(error => {
+    console.error('Error obtaining microphone access:', error);
+    // User denied the microphone access, handle error
+  });
+    </script>
+  </body>
+</html>
